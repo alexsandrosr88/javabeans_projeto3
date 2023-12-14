@@ -1,0 +1,8 @@
+br\jsf\JsfCompe.class
+br\JakartaRestConfiguration.class
+br\jsf\JsfRanking.class
+br\data\model\Competidor.class
+br\ejb\EjbRanking.class
+br\resources\JakartaEE8Resource.class
+br\data\model\CrudCompetidor.class
+br\ejb\EjbCompetidores.class

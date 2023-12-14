@@ -1,0 +1,58 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Projeto Java Beans 2</title>
+        <h:outputStylesheet library = "css" name = "styles.css" /> 
+    </h:head>
+    <h:body>
+        <div>   
+            <h1>Projeto Java Beans 2</h1>
+            <h:form>           
+                <label for="nome">Informe seu nome: </label>
+                <h:inputText styleClass="nome" value="#{jsfCompe.nome}" 
+                    required="true" 
+                    requiredMessage="Você precisa digitar um nome!" />
+                <h:commandButton value="OK" styleClass="botao"
+                                 action="#{jsfCompe.addCompetidor()}"/>              
+                <br></br><br></br>
+                <label for="resposta">Resolva esta conta:</label>
+                <br></br>
+                <h:inputText value="#{jsfCompe.valorA}" 
+                             id="valorA" disabled="true"/>
+                <label>+</label>
+                <h:inputText value="#{jsfCompe.valorB}" 
+                             id="valorB" disabled="true"/>
+                <label>=</label>
+                <h:inputText styleClass="resposta" required="false" value="#{jsfCompe.resposta}"
+                    requiredMessage="Você precisa digitar sua resposta!"/>
+                <h:commandButton value="Verificar" styleClass="botao"
+                                 action="#{jsfCompe.contabilizaPontos()}"/>
+                <br></br>
+                <h:messages styleClass="mensagem" />
+            </h:form>
+            <br></br><br></br>
+            <h2>====== Ranking ======</h2>
+            <h:form>
+                <div id="divTabela">
+                    <h:dataTable value="#{jsfRanking.competidores}" var="comp"
+                                 styleClass = "rankingTable"
+                                 headerClass="rankingHeader"
+                                 columnClasses="coluna"
+                                 rowClasses="linha">
+                        <h:column>
+                            <f:facet name="header">Nome</f:facet>
+                            <h:outputText value="#{comp.nome}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">Pontos</f:facet>
+                            <h:outputText value="#{comp.pontos}"/>
+                        </h:column>
+                    </h:dataTable>
+                </div>
+            </h:form>
+        </div>
+    </h:body>
+</html>
