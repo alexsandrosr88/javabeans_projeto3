@@ -1,4 +1,5 @@
 br\jsf\JsfCompe.class
+br\ejb\EjbConsumidor.class
 br\JakartaRestConfiguration.class
 br\jsf\JsfRanking.class
 br\data\model\Competidor.class

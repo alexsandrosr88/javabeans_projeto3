@@ -22,27 +22,34 @@ public class EjbCompetidores {
     }
 
     public void addCompetidor(String nome) {
-        if(!validaNomeDuplicado(nome)){
+        if (!validaNomeDuplicado(nome)) {
             competidores.addCompetidor(new Competidor(nome, 0));
         }
     }
-    
-    private boolean validaNomeDuplicado(String nome){
+
+    private boolean validaNomeDuplicado(String nome) {
         return competidores.getCompetidores().stream()
-            .anyMatch(competidor->competidor.getNome()
-               .equalsIgnoreCase(nome));
+                .anyMatch(competidor -> competidor.getNome()
+                .equalsIgnoreCase(nome));
     }
 
     public List<Competidor> getCompetidores() {
         return competidores.getCompetidores();
     }
-    
+
+    public Competidor primeiroPosicao() {
+        if (competidores.getCompetidores().size() > 1) {
+            return competidores.getCompetidores().get(0);
+        }
+        return null;
+    }
+
     public int aleatorios() {
         Random random = new Random();
         return (random.nextInt(9) + 1) * 10;
     }
 
-    public boolean contabilizadorDePontos(String nome, Integer valorA, 
+    public boolean contabilizadorDePontos(String nome, Integer valorA,
             Integer valorB, Integer resposta) {
         Competidor competidor = pesquisaCompetidorPorNome(nome);
 
@@ -55,14 +62,13 @@ public class EjbCompetidores {
         }
     }
 
-    
-    private Competidor pesquisaCompetidorPorNome(String nome){
+    public Competidor pesquisaCompetidorPorNome(String nome) {
         return competidores.getCompetidores().stream()
-                .filter(competidor->competidor.getNome()
-                        .equalsIgnoreCase(nome))
+                .filter(competidor -> competidor.getNome()
+                .equalsIgnoreCase(nome))
                 .findFirst().orElse(null);
     }
-    
+
     private boolean validaAcerto(int valorA, int valorB, int resposta) {
         return valorA + valorB == resposta;
     }
