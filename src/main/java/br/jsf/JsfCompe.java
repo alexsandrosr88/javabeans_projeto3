@@ -3,17 +3,21 @@ package br.jsf;
 import br.data.model.Competidor;
 import br.ejb.EjbCompetidores;
 import java.io.Serializable;
+import java.sql.SQLOutput;
 import java.util.List;
-import java.util.Queue;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
+import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
-import javax.jms.Destination;
 import javax.jms.JMSContext;
+import javax.jms.JMSException;
+import javax.jms.ObjectMessage;
+import javax.jms.Queue;
+import javax.jms.Session;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -41,8 +45,6 @@ public class JsfCompe implements Serializable {
     @Resource(lookup = "java/Fila")
     private Queue fila;
 
-    private Competidor primeiraPosicao;
-
     @EJB
     private EjbCompetidores ejbCompetidores;
 
@@ -53,7 +55,6 @@ public class JsfCompe implements Serializable {
         ejbCompetidores = new EjbCompetidores();
         valorA = ejbCompetidores.aleatorios();
         valorB = ejbCompetidores.aleatorios();
-        primeiraPosicao = ejbCompetidores.primeiroPosicao();
     }
 
     public List<Competidor> getLista() {
@@ -61,31 +62,32 @@ public class JsfCompe implements Serializable {
     }
 
     public void addCompetidor() {
-        if (nome != null) {
-            System.out.println(nome);
-
+        if (nome == null) {
+            mensagemDeRetorno("Você digitou um nome e clicou no OK?");
         }
-        ejbCompetidores.addCompetidor(nome);
+        else{
+            ejbCompetidores.addCompetidor(nome); 
+        }
     }
 
     public void contabilizaPontos() {
 
-        if (resposta != null && nome != null && ejbCompetidores.contabilizadorDePontos(nome, valorA, valorB,
+        if (resposta != null && ejbCompetidores.contabilizadorDePontos(nome, valorA, valorB,
                 resposta)) {
             resetCampos();
-            verificaAlteracaoNoPrimeiroColocado(ejbCompetidores
-                    .pesquisaCompetidorPorNome(nome));
             mensagemDeRetorno("Você acertou! E obteve um ponto!");
-        } else if (resposta == null) {
+            verificaAlteracaoNoPrimeiroColocado(nome);
+            
+        } 
+        else if (resposta == null) {
             mensagemDeRetorno("Digite uma resposta!");
-        } else if (nome == null) {
-            mensagemDeRetorno("Você clicou no OK?");
-        } else {
+        }
+        else {
             mensagemDeRetorno("Você errou! Tente de novo!");
         }
 
     }
-
+   
     private void resetCampos() {
         valorA = ejbCompetidores.aleatorios();
         valorB = ejbCompetidores.aleatorios();
@@ -98,18 +100,31 @@ public class JsfCompe implements Serializable {
                         mensagem));
     }
 
-    private void verificaAlteracaoNoPrimeiroColocado(Competidor competidor) {
-        if (primeiraPosicao.equals(competidor)) {
+    private void verificaAlteracaoNoPrimeiroColocado(String nome) {        
+        
+        if (primeiraPosicao().getNome().equals(nome)){
             send();
         }
     }
+    
+    private Competidor primeiraPosicao(){
+        return ejbCompetidores.primeiraPosicao();
+    }
 
     public void send() {
+        
         try {
+            List<Competidor> competidores = ejbCompetidores.getCompetidores();
+            Connection conn = connectionFactory.createConnection();
+            Session session = conn.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            ObjectMessage om = session.createObjectMessage();
+
+            om.setObject((Serializable) competidores);
             JMSContext context = connectionFactory.createContext();
-            context.createProducer().send((Destination) fila,
-                    "Alteração do primeiro colocado!");
-        } catch (Exception e) {
+
+            context.createProducer().send(fila, om);
+        } 
+        catch (JMSException e) {
             System.out.println("ERRO!");
             System.out.println(e.getMessage());
         }

@@ -30,6 +30,10 @@ public class CrudCompetidor {
     public void addCompetidor(Competidor competidor) {
         competidores.add(competidor);
     }
+    
+    public static Competidor primeiraPosicao(){
+        return competidores.get(0);
+    }
 
     public List<Competidor> getCompetidores() {
         return listaOrdenadaPorPontos();

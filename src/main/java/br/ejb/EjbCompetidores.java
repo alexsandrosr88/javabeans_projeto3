@@ -33,15 +33,15 @@ public class EjbCompetidores {
                 .equalsIgnoreCase(nome));
     }
 
-    public List<Competidor> getCompetidores() {
-        return competidores.getCompetidores();
-    }
-
-    public Competidor primeiroPosicao() {
-        if (competidores.getCompetidores().size() > 1) {
-            return competidores.getCompetidores().get(0);
+    public Competidor primeiraPosicao() {
+        if (competidores.getCompetidores().size() > 0) {
+            return getCompetidores().get(0);
         }
         return null;
+    }
+
+    public List<Competidor> getCompetidores() {
+        return competidores.getCompetidores();
     }
 
     public int aleatorios() {
@@ -51,16 +51,17 @@ public class EjbCompetidores {
 
     public boolean contabilizadorDePontos(String nome, Integer valorA,
             Integer valorB, Integer resposta) {
+        
         Competidor competidor = pesquisaCompetidorPorNome(nome);
 
-        if (validaAcerto(valorA, valorB, resposta)) {
+        if (competidor != null && validaAcerto(valorA, valorB, resposta)) {
             competidor.setPontos(competidor.getPontos() + 1);
             return true;
         } else {
             competidor.setPontos(competidor.getPontos() + 0);
             return false;
         }
-    }
+    }    
 
     public Competidor pesquisaCompetidorPorNome(String nome) {
         return competidores.getCompetidores().stream()
